@@ -1,0 +1,129 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System;
+
+namespace WaterBillCalculator
+class Program
+
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Water Bill Calculator");
+
+        bool exit = false;
+
+        while (!exit)
+        {
+            // Input gathering
+            Console.Write("Enter customer name: ");
+            string customerName = Console.ReadLine();
+
+            Console.Write("Enter last month's water meter readings: ");
+            int lastMonthReadings = ReadIntegerInput();
+
+            Console.Write("Enter this month's water meter readings: ");
+            int thisMonthReadings = ReadIntegerInput();
+
+            Console.Write("Enter the customer type (1 - Household, 2 - Administrative agency, 3 - Production units, 4 - Business services): ");
+            int customerType = ReadIntegerInput();
+
+            int numberOfPeople = 0;
+            if (customerType == 1)
+            {
+                Console.Write("Enter the number of people in the household: ");
+                numberOfPeople = ReadIntegerInput();
+            }
+
+            // Consumption calculation
+            int consumption = thisMonthReadings - lastMonthReadings;
+
+            // Calculate bill
+            double totalBill = CalculateWaterBill(customerType, consumption, numberOfPeople);
+
+            // Output generation
+            Console.WriteLine();
+            Console.WriteLine("Customer Name: " + customerName);
+            Console.WriteLine("Last Month's Water Meter Readings: " + lastMonthReadings);
+            Console.WriteLine("This Month's Water Meter Readings: " + thisMonthReadings);
+            Console.WriteLine("Amount of Consumption: " + consumption);
+            Console.WriteLine("Total Water Bill: " + totalBill.ToString("0.00 VND"));
+
+            Console.WriteLine();
+            Console.Write("Do you want to calculate another water bill? (Y/N): ");
+            string answer = Console.ReadLine();
+
+            if (answer.ToLower() != "y")
+            {
+                exit = true;
+            }
+
+            Console.WriteLine();
+        }
+    }
+
+    static int ReadIntegerInput()
+    {
+        int result;
+        while (!int.TryParse(Console.ReadLine(), out result))
+        {
+            Console.WriteLine("Invalid input. Please enter a valid integer.");
+        }
+        return result;
+    }
+
+    static double CalculateWaterBill(int customerType, int consumption, int numberOfPeople)
+    {
+        double price = 0;
+        double environmentFees = 0;
+
+        switch (customerType)
+        {
+            case 1: // Household
+                if (consumption <= 10)
+                {
+                    price = 5.973;
+                }
+                else if (consumption <= 20)
+                {
+                    price = 7.052;
+                }
+                else if (consumption <= 30)
+                {
+                    price = 8.699;
+                }
+                else
+                {
+                    price = 15.929;
+                }
+
+                price *= consumption;
+                break;
+
+            case 2: // Administrative agency, public services
+                price = 9.955;
+                environmentFees = 995.50;
+                break;
+
+            case 3: // Production units
+                price = 11.615;
+                environmentFees = 1161.50;
+                break;
+
+            case 4: // Business services
+                price = 22.068;
+                environmentFees = 2206.80;
+                break;
+
+            default:
+                Console.WriteLine("Invalid customer type.");
+                return 0;
+        }
+
+        double totalBill = (price * consumption) + environmentFees;
+
+        return totalBill;
+    }
+}
